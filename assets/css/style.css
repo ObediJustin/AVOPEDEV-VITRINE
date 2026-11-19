@@ -738,6 +738,53 @@ h3 {
   gap: clamp(2rem, 5vw, 4.5rem);
 }
 
+.achievement-showcase {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.achievement-feature {
+  overflow: hidden;
+  color: var(--ink-soft);
+  background: var(--white);
+  border-radius: var(--radius);
+}
+
+.achievement-feature img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.achievement-feature-content {
+  padding: clamp(1.25rem, 3vw, 1.8rem);
+}
+
+.achievement-feature h3 {
+  color: var(--forest);
+}
+
+.achievement-feature p {
+  margin: 0.75rem 0 0;
+}
+
+.achievement-feature-tag {
+  display: inline-block;
+  margin-bottom: 0.65rem;
+  color: var(--orange-deep);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.achievement-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
 .achievement {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
@@ -1334,7 +1381,8 @@ h3 {
   }
 
   .values-grid,
-  .news-grid {
+  .news-grid,
+  .achievement-showcase {
     grid-template-columns: 1fr;
   }
 
