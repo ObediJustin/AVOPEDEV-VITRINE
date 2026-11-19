@@ -472,9 +472,10 @@ h3 {
 .page-hero {
   position: relative;
   overflow: hidden;
-  padding: clamp(5rem, 10vw, 8rem) 0;
+  padding: clamp(3.75rem, 7vw, 6rem) 0;
   color: var(--white);
-  background: var(--forest);
+  background: linear-gradient(135deg, var(--green-deep), var(--forest) 68%, var(--green));
+  border-bottom: 4px solid var(--orange);
 }
 
 .page-hero::after {
@@ -491,11 +492,18 @@ h3 {
 
 .page-hero h1 {
   max-width: 900px;
+  font-size: clamp(2.45rem, 5.2vw, 4.65rem);
 }
 
 .page-hero .lead {
   max-width: 720px;
+  margin-top: 1.1rem;
   color: rgba(255, 255, 255, 0.86);
+}
+
+.page-hero .container {
+  position: relative;
+  z-index: 1;
 }
 
 .intro-grid,
@@ -1491,6 +1499,14 @@ h3 {
     gap: 0.55rem 1rem;
     margin-top: 1.5rem;
     padding-top: 1.1rem;
+  }
+
+  .page-hero {
+    padding-block: 3.5rem;
+  }
+
+  .page-hero h1 {
+    font-size: clamp(2.3rem, 10.5vw, 3.25rem);
   }
 
   .button-row .button {
