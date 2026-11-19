@@ -1,0 +1,153 @@
+[
+  {
+    "id": "pepiniere-avopedev",
+    "src": "assets/images/pepiniere-avopedev.jpg",
+    "title": "Pépinière de l’AVOPEDEV",
+    "description": "Plantules forestières produites dans le cadre des actions de reboisement.",
+    "category": "environnement",
+    "alt": "Pépinière de plantules AVOPEDEV",
+    "width": 1390,
+    "height": 625
+  },
+  {
+    "id": "paves-ecologiques",
+    "src": "assets/images/paves-ecologiques.jpg",
+    "title": "Fabrication de pavés écologiques",
+    "description": "Valorisation de déchets plastiques dans la fabrication de pavés écologiques.",
+    "category": "environnement",
+    "alt": "Pavés écologiques fabriqués à partir de déchets plastiques",
+    "width": 398,
+    "height": 415
+  },
+  {
+    "id": "champ-riz-kyatenga",
+    "src": "assets/images/champ-riz-kyatenga.jpg",
+    "title": "Champ de riz à Kyatenga",
+    "description": "Champ de riz dans le bassin de production de Kyatenga.",
+    "category": "agriculture",
+    "alt": "Champ de riz dans le bassin de production de Kyatenga",
+    "location": "Kyatenga",
+    "width": 731,
+    "height": 452
+  },
+  {
+    "id": "sensibilisation-bonnes-pratiques",
+    "src": "assets/images/sensibilisation-bonnes-pratiques.jpg",
+    "title": "Sensibilisation aux bonnes pratiques",
+    "description": "Séance de sensibilisation communautaire animée par AVOPEDEV.",
+    "category": "sensibilisation",
+    "alt": "Séance de sensibilisation sur les bonnes pratiques",
+    "width": 840,
+    "height": 447
+  },
+  {
+    "id": "semences-riz-nerica",
+    "src": "assets/images/semences-riz-nerica.jpg",
+    "title": "Semences de riz NERICA 4",
+    "description": "Semences de riz NERICA 4 destinées à l’accompagnement des producteurs.",
+    "category": "agriculture",
+    "alt": "Semences de riz NERICA 4",
+    "width": 996,
+    "height": 492
+  },
+  {
+    "id": "semences-haricots",
+    "src": "assets/images/semences-haricots.jpg",
+    "title": "Semences de haricot",
+    "description": "Semences de haricot utilisées dans les activités de sécurité alimentaire.",
+    "category": "agriculture",
+    "alt": "Semences de haricot",
+    "width": 1600,
+    "height": 720
+  },
+  {
+    "id": "assainissement-communautaire",
+    "src": "assets/images/assainissement.jpg",
+    "title": "Mobilisation pour l’assainissement",
+    "description": "Activité communautaire consacrée à l’amélioration du cadre de vie.",
+    "category": "communautes",
+    "alt": "Activité communautaire d’assainissement",
+    "width": 1600,
+    "height": 837
+  },
+  {
+    "id": "elevage-lapins",
+    "src": "assets/images/elevage-lapins.jpg",
+    "title": "Élevage de lapins",
+    "description": "Activité d’élevage accompagnée par AVOPEDEV.",
+    "category": "elevage",
+    "alt": "Élevage de lapins",
+    "width": 820,
+    "height": 517
+  },
+  {
+    "id": "elevage-lapins-installation",
+    "src": "assets/images/elevage-lapins-2.jpg",
+    "title": "Installation d’élevage",
+    "description": "Lapins dans une installation d’élevage.",
+    "category": "elevage",
+    "alt": "Lapins dans une installation d’élevage",
+    "width": 809,
+    "height": 296
+  },
+  {
+    "id": "elevage-lapins-groupe",
+    "src": "assets/images/elevage-lapins-groupe.jpg",
+    "title": "Accompagnement d’une activité d’élevage",
+    "description": "Activité communautaire autour de l’élevage de lapins.",
+    "category": "elevage",
+    "alt": "Activité communautaire autour de l’élevage de lapins",
+    "width": 1600,
+    "height": 720
+  },
+  {
+    "id": "recyclage-dechets-1",
+    "src": "assets/images/recyclage-1.jpg",
+    "title": "Recyclage des déchets plastiques",
+    "description": "Activité de collecte et de valorisation des déchets plastiques.",
+    "category": "environnement",
+    "alt": "Activité de recyclage des déchets plastiques",
+    "width": 598,
+    "height": 413
+  },
+  {
+    "id": "recyclage-dechets-2",
+    "src": "assets/images/recyclage-2.jpg",
+    "title": "Tri des déchets",
+    "description": "Tri de matières destinées à la valorisation.",
+    "category": "environnement",
+    "alt": "Tri et valorisation des déchets",
+    "width": 360,
+    "height": 504
+  },
+  {
+    "id": "recyclage-dechets-3",
+    "src": "assets/images/recyclage-3.jpg",
+    "title": "Collecte en vue du recyclage",
+    "description": "Déchets collectés dans le cadre des actions environnementales.",
+    "category": "environnement",
+    "alt": "Collecte de déchets destinés au recyclage",
+    "width": 632,
+    "height": 329
+  },
+  {
+    "id": "recyclage-dechets-4",
+    "src": "assets/images/recyclage-4.jpg",
+    "title": "Matières plastiques collectées",
+    "description": "Matières plastiques réunies pour leur valorisation.",
+    "category": "environnement",
+    "alt": "Matières plastiques collectées",
+    "width": 307,
+    "height": 409
+  },
+  {
+    "id": "mobilisation-communautaire",
+    "src": "assets/images/scolarisation.jpg",
+    "title": "Mobilisation communautaire",
+    "description": "Activité communautaire réunissant enfants et adultes.",
+    "category": "communautes",
+    "alt": "Activité communautaire réunissant enfants et adultes",
+    "width": 1600,
+    "height": 577
+  }
+]
