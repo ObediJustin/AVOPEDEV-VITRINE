@@ -1,17 +1,88 @@
 import { spawn } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import { createServer } from "node:http";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
-import { pathToFileURL, fileURLToPath } from "node:url";
+import { dirname, extname, join, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-const port = 9333;
+const debugPort = 9333;
+const mimeTypes = {
+  ".css": "text/css; charset=utf-8",
+  ".html": "text/html; charset=utf-8",
+  ".jpg": "image/jpeg",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".xml": "application/xml; charset=utf-8"
+};
+const mockNews = [
+  {
+    id: "test-environment",
+    title: "Test environnement récent",
+    date: "2026-02-02",
+    category: "Environnement",
+    summary: "Résumé exclusivement utilisé par le test navigateur.",
+    content: "Premier paragraphe de test.\n\nDeuxième paragraphe de test.",
+    image: "assets/images/pepiniere-avopedev.jpg",
+    alt: "Image utilisée dans le test navigateur",
+    status: "published"
+  },
+  {
+    id: "test-agriculture",
+    title: "Test agriculture antérieur",
+    date: "2026-01-01",
+    category: "Agriculture",
+    summary: "Deuxième résumé exclusivement utilisé par le test.",
+    content: "Contenu agriculture du test navigateur.",
+    image: "assets/images/champ-riz-kyatenga.jpg",
+    alt: "Deuxième image utilisée dans le test navigateur",
+    status: "published"
+  },
+  {
+    id: "test-draft",
+    title: "Brouillon de test invisible",
+    date: "2026-03-01",
+    category: "Test",
+    summary: "Ce brouillon ne doit jamais être affiché.",
+    content: "Contenu non publié.",
+    image: "",
+    alt: "",
+    status: "draft"
+  }
+];
+let serveMockNews = false;
+
+const staticServer = createServer(async (request, response) => {
+  try {
+    const requestUrl = new URL(request.url, "http://127.0.0.1");
+    const pathname = decodeURIComponent(requestUrl.pathname === "/" ? "/index.html" : requestUrl.pathname);
+    if (pathname === "/data/news.json" && serveMockNews) {
+      response.writeHead(200, { "Content-Type": mimeTypes[".json"] });
+      response.end(JSON.stringify(mockNews));
+      return;
+    }
+    const filePath = resolve(projectRoot, `.${pathname}`);
+    if (filePath !== projectRoot && !filePath.startsWith(`${projectRoot}${sep}`)) {
+      response.writeHead(403).end("Forbidden");
+      return;
+    }
+    const body = await readFile(filePath);
+    response.writeHead(200, { "Content-Type": mimeTypes[extname(filePath)] || "application/octet-stream" });
+    response.end(body);
+  } catch {
+    response.writeHead(404).end("Not found");
+  }
+});
+await new Promise((resolveListen) => staticServer.listen(0, "127.0.0.1", resolveListen));
+const siteBaseUrl = `http://127.0.0.1:${staticServer.address().port}/`;
 const profile = mkdtempSync(join(tmpdir(), "avopedev-qa-"));
 const chrome = spawn(chromePath, [
   "--headless=new",
   "--disable-gpu",
-  `--remote-debugging-port=${port}`,
+  `--remote-debugging-port=${debugPort}`,
   `--user-data-dir=${profile}`,
   "about:blank"
 ], { stdio: "ignore" });
@@ -21,7 +92,7 @@ const delay = (milliseconds) => new Promise((resolveDelay) => setTimeout(resolve
 async function waitForChrome() {
   for (let attempt = 0; attempt < 40; attempt += 1) {
     try {
-      const response = await fetch(`http://127.0.0.1:${port}/json/version`);
+      const response = await fetch(`http://127.0.0.1:${debugPort}/json/version`);
       if (response.ok) return;
     } catch {}
     await delay(100);
@@ -30,7 +101,7 @@ async function waitForChrome() {
 }
 
 async function openSession() {
-  const response = await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: "PUT" });
+  const response = await fetch(`http://127.0.0.1:${debugPort}/json/new?about:blank`, { method: "PUT" });
   const target = await response.json();
   const socket = new WebSocket(target.webSocketDebuggerUrl);
   await new Promise((resolveOpen, rejectOpen) => {
@@ -67,7 +138,7 @@ async function navigate(command, page, width = 1440, height = 900) {
     deviceScaleFactor: 1,
     mobile: width < 820
   });
-  await command("Page.navigate", { url: pathToFileURL(join(projectRoot, page)).href });
+  await command("Page.navigate", { url: new URL(page, siteBaseUrl).href });
   for (let attempt = 0; attempt < 40; attempt += 1) {
     const readiness = await command("Runtime.evaluate", {
       expression: 'document.readyState === "complete" && Boolean(document.querySelector(".site-header"))',
@@ -87,6 +158,14 @@ async function evaluate(command, expression) {
   });
   if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);
   return result.result.value;
+}
+
+async function waitForExpression(command, expression, message) {
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    if (await evaluate(command, expression)) return;
+    await delay(100);
+  }
+  throw new Error(message);
 }
 
 const failures = [];
@@ -144,22 +223,67 @@ try {
   check(menu.labelRestored, "Le libellé accessible du menu mobile n’est pas restauré.");
 
   await navigate(command, "gallery.html", 768);
+  await waitForExpression(command, 'document.querySelectorAll("[data-gallery] figure").length === 15', "La galerie JSON ne s’est pas chargée.");
   const gallery = await evaluate(command, `(() => {
+    const sensibilisation = [...document.querySelectorAll("[data-filter]")].find((button) => button.dataset.filter === "sensibilisation");
+    sensibilisation.click();
+    const filteredCount = document.querySelectorAll("[data-gallery] figure").length;
+    document.querySelector('[data-filter="all"]').click();
     document.querySelector("[data-gallery] button").click();
     const lightbox = document.querySelector("[data-lightbox]");
     const opened = !lightbox.hidden;
     const statusAnnounced = document.querySelector("[data-lightbox-status]").textContent === "1 sur 15";
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    return { opened, statusAnnounced, closed: lightbox.hidden, brokenImages: [...document.images].filter((image) => image.getAttribute("src") && image.complete && image.naturalWidth === 0).length };
+    return { filteredCount, opened, statusAnnounced, closed: lightbox.hidden, brokenImages: [...document.images].filter((image) => image.getAttribute("src") && image.complete && image.naturalWidth === 0).length };
   })()`);
+  check(gallery.filteredCount === 1, "Le filtre Sensibilisation de la galerie est incorrect.");
   check(gallery.opened && gallery.closed, "La visionneuse de galerie ne répond pas au clavier.");
   check(gallery.statusAnnounced, "La position courante de la galerie n’est pas annoncée.");
   check(gallery.brokenImages === 0, "Une image de la galerie ne charge pas.");
 
   await navigate(command, "news.html", 1024);
+  await waitForExpression(command, '!document.querySelector("[data-news-empty]").hidden', "L’état vide des actualités ne s’est pas affiché.");
   const news = await evaluate(command, `({ emptyVisible: !document.querySelector("[data-news-empty]").hidden })`);
   check(news.emptyVisible, "L’état vide des actualités n’est pas visible.");
+
+  serveMockNews = true;
+  await navigate(command, "news.html", 1024);
+  await waitForExpression(command, 'document.querySelectorAll("[data-news-list] .news-card").length === 2', "Les cartes d’actualités de test ne se sont pas affichées.");
+  const newsInteractions = await evaluate(command, `(() => {
+    const initialTitles = [...document.querySelectorAll("[data-news-list] h2")].map((item) => item.textContent);
+    const search = document.querySelector("[data-news-search]");
+    search.value = "agriculture";
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+    const searchCount = document.querySelectorAll("[data-news-list] .news-card").length;
+    search.value = "";
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+    const category = document.querySelector("[data-news-category]");
+    category.value = "Environnement";
+    category.dispatchEvent(new Event("change", { bubbles: true }));
+    const categoryCount = document.querySelectorAll("[data-news-list] .news-card").length;
+    return { initialTitles, searchCount, categoryCount };
+  })()`);
+  check(newsInteractions.initialTitles[0] === "Test environnement récent", "Le tri décroissant des actualités est incorrect.");
+  check(newsInteractions.searchCount === 1, "La recherche d’actualités est incorrecte.");
+  check(newsInteractions.categoryCount === 1, "Le filtre de catégorie des actualités est incorrect.");
+
+  await navigate(command, "article.html?id=test-environment", 1024);
+  await waitForExpression(command, '!document.querySelector("[data-article-content]").hidden', "L’article de test ne s’est pas affiché.");
+  const article = await evaluate(command, `({
+    title: document.querySelector("[data-article-title]").textContent,
+    paragraphs: document.querySelectorAll("[data-article-body] p").length
+  })`);
+  check(article.title === "Test environnement récent" && article.paragraphs === 2, "La page article réutilisable est incorrecte.");
+
+  await navigate(command, "article.html?id=identifiant-inconnu", 1024);
+  await waitForExpression(command, '!document.querySelector("[data-article-missing]").hidden', "L’état article introuvable ne s’est pas affiché.");
+  const missingArticle = await evaluate(command, 'document.querySelector("[data-article-title]").textContent');
+  check(missingArticle === "Actualité introuvable", "L’identifiant d’article inconnu n’est pas géré.");
+
+  await navigate(command, "index.html", 1024);
+  await waitForExpression(command, 'document.querySelectorAll("[data-home-news-list] .news-card").length === 2', "Les actualités de l’accueil ne se sont pas affichées.");
+  serveMockNews = false;
 
   for (const page of ["about.html", "domains.html", "achievements.html", "contact.html"]) {
     await navigate(command, page, 1024);
@@ -173,11 +297,26 @@ try {
     check(result.brokenImages === 0, `${page} contient une image non chargée.`);
   }
 
+  await navigate(command, "contact.html", 375);
+  const contactValidation = await evaluate(command, `(() => {
+    const form = document.querySelector("[data-mail-form]");
+    form.requestSubmit();
+    return {
+      firstInvalidFocused: document.activeElement.id === "name",
+      invalidCount: form.querySelectorAll('[aria-invalid="true"]').length,
+      status: form.querySelector("[data-form-status]").textContent
+    };
+  })()`);
+  check(contactValidation.firstInvalidFocused, "Le formulaire ne place pas le focus sur la première erreur.");
+  check(contactValidation.invalidCount === 4, "Les champs obligatoires du formulaire ne sont pas tous validés.");
+  check(contactValidation.status.includes("Vérifiez"), "Le message d’erreur global du formulaire est absent.");
+
   socket.close();
   console.log(JSON.stringify({ passed: failures.length === 0, report, failures }, null, 2));
   if (failures.length) process.exitCode = 1;
 } finally {
   chrome.kill();
+  await new Promise((resolveClose) => staticServer.close(resolveClose));
   for (let attempt = 0; attempt < 5; attempt += 1) {
     try {
       rmSync(profile, { recursive: true, force: true });
