@@ -1,5 +1,13 @@
 (() => {
   const NEWS_URL = "data/news.json";
+  const GALLERY_URL = "data/gallery.json";
+  const GALLERY_CATEGORY_LABELS = Object.freeze({
+    environnement: "Environnement",
+    agriculture: "Agriculture",
+    sensibilisation: "Sensibilisation",
+    communautes: "Communautés",
+    elevage: "Élevage"
+  });
 
   const fetchJson = async (url) => {
     const response = await fetch(url, { headers: { Accept: "application/json" } });
@@ -39,6 +47,28 @@
       .filter((item) => item.status === "published")
       .sort((first, second) => new Date(second.date) - new Date(first.date));
   };
+
+  const normalizeGalleryItem = (item) => ({
+    id: String(item.id || "").trim(),
+    src: String(item.src || "").trim(),
+    title: String(item.title || "").trim(),
+    description: String(item.description || "").trim(),
+    category: String(item.category || "").trim(),
+    alt: String(item.alt || "").trim(),
+    location: String(item.location || "").trim(),
+    width: Number(item.width) || 0,
+    height: Number(item.height) || 0
+  });
+
+  const loadGallery = async () => {
+    const data = await fetchJson(GALLERY_URL);
+    if (!Array.isArray(data)) throw new Error("Le fichier de galerie doit contenir une liste.");
+    return data
+      .map(normalizeGalleryItem)
+      .filter((item) => item.id && item.src && item.title && item.category && item.alt && item.width > 0 && item.height > 0);
+  };
+
+  const getGalleryCategoryLabel = (category) => GALLERY_CATEGORY_LABELS[category] || category;
 
   const formatNewsDate = (date) => new Intl.DateTimeFormat("fr-FR", {
     day: "numeric",
@@ -89,8 +119,10 @@
   window.AVOPEDEV_CONTENT = Object.freeze({
     loadNews,
     loadPublishedNews,
+    loadGallery,
     formatNewsDate,
     getArticleUrl,
-    createNewsCard
+    createNewsCard,
+    getGalleryCategoryLabel
   });
 })();
