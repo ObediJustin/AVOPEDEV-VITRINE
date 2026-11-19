@@ -1,0 +1,11 @@
+{
+  "name": "avopedev-vitrine",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "generate:articles": "node scripts/generate-articles.mjs",
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "test": "node tests/site-smoke.mjs"
+  }
+}

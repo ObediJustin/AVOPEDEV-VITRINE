@@ -109,8 +109,7 @@
       },
       { threshold: 0.12 }
     );
-    revealItems.forEach((item, index) => {
-      item.style.setProperty("--reveal-delay", `${(index % 3) * 70}ms`);
+    revealItems.forEach((item) => {
       observer.observe(item);
     });
     document.documentElement.classList.add("reveal-ready");

@@ -1481,7 +1481,7 @@ h3 {
 .reveal-ready [data-reveal] {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 520ms ease var(--reveal-delay, 0ms), transform 520ms ease var(--reveal-delay, 0ms);
+  transition: opacity 520ms ease, transform 520ms ease;
 }
 
 .reveal-ready [data-reveal].is-visible {

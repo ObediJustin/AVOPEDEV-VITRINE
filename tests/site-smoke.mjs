@@ -7,6 +7,7 @@ import { dirname, extname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const siteRoot = join(projectRoot, "dist");
 const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const debugPort = 9333;
 const mimeTypes = {
@@ -27,7 +28,7 @@ const mockNews = [
     category: "Environnement",
     summary: "Résumé exclusivement utilisé par le test navigateur.",
     content: "Premier paragraphe de test.\n\nDeuxième paragraphe de test.",
-    image: "assets/images/pepiniere-avopedev.jpg",
+    image: "assets/images/pepiniere-avopedev.webp",
     alt: "Image utilisée dans le test navigateur",
     status: "published"
   },
@@ -38,7 +39,7 @@ const mockNews = [
     category: "Agriculture",
     summary: "Deuxième résumé exclusivement utilisé par le test.",
     content: "Contenu agriculture du test navigateur.",
-    image: "assets/images/champ-riz-kyatenga.jpg",
+    image: "assets/images/champ-riz-kyatenga.webp",
     alt: "Deuxième image utilisée dans le test navigateur",
     status: "published"
   },
@@ -95,6 +96,18 @@ try {
 } finally {
   rmSync(generatorFixture, { recursive: true, force: true });
 }
+
+const build = spawnSync(process.execPath, [join(projectRoot, "scripts", "build-site.mjs")], { encoding: "utf8" });
+if (build.status !== 0) throw new Error(build.stderr || "La construction du site statique a échoué.");
+const publicNews = JSON.parse(readFileSync(join(siteRoot, "data", "news.json"), "utf8"));
+if (publicNews.some((item) => String(item.status).toLowerCase() !== "published")) {
+  throw new Error("Le dossier publié contient une actualité non publiée.");
+}
+for (const privateEntry of ["tests", "scripts", "README.md", "CONTENT_GUIDE.md", "site.config.json"]) {
+  if (readdirSync(siteRoot, { withFileTypes: true }).some((entry) => entry.name === privateEntry)) {
+    throw new Error(`Le dossier publié expose une ressource de développement : ${privateEntry}`);
+  }
+}
 let serveMockNews = false;
 
 const staticServer = createServer(async (request, response) => {
@@ -106,8 +119,8 @@ const staticServer = createServer(async (request, response) => {
       response.end(JSON.stringify(mockNews));
       return;
     }
-    const filePath = resolve(projectRoot, `.${pathname}`);
-    if (filePath !== projectRoot && !filePath.startsWith(`${projectRoot}${sep}`)) {
+    const filePath = resolve(siteRoot, `.${pathname}`);
+    if (filePath !== siteRoot && !filePath.startsWith(`${siteRoot}${sep}`)) {
       response.writeHead(403).end("Forbidden");
       return;
     }
