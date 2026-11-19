@@ -4,7 +4,7 @@
   --green-deep: #0b2e22;
   --green-soft: #eaf4ec;
   --orange: #f28c28;
-  --orange-deep: #c96312;
+  --orange-deep: #a94f0a;
   --orange-soft: #fff0e0;
   --white: #ffffff;
   --paper: #fafaf8;
@@ -67,7 +67,7 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid var(--orange);
+  outline: 3px solid var(--orange-deep);
   outline-offset: 4px;
 }
 

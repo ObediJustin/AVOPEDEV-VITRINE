@@ -5,12 +5,21 @@
   const backToTop = document.querySelector("[data-back-to-top]");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const syncNavigationAvailability = () => {
+    if (!menuButton || !navigation) return;
+    const closedOnMobile = window.innerWidth <= 820 && menuButton.getAttribute("aria-expanded") !== "true";
+    navigation.inert = closedOnMobile;
+    if (closedOnMobile) navigation.setAttribute("aria-hidden", "true");
+    else navigation.removeAttribute("aria-hidden");
+  };
+
   const closeMenu = (restoreFocus = false) => {
     if (!menuButton || !navigation) return;
     menuButton.setAttribute("aria-expanded", "false");
     menuButton.setAttribute("aria-label", "Ouvrir le menu");
     navigation.classList.remove("is-open");
     body.classList.remove("menu-open");
+    syncNavigationAvailability();
     if (restoreFocus) menuButton.focus();
   };
 
@@ -18,6 +27,8 @@
     if (!menuButton || !navigation) return;
     menuButton.setAttribute("aria-expanded", "true");
     menuButton.setAttribute("aria-label", "Fermer le menu");
+    navigation.inert = false;
+    navigation.removeAttribute("aria-hidden");
     navigation.classList.add("is-open");
     body.classList.add("menu-open");
     navigation.querySelector("a")?.focus();
@@ -60,7 +71,9 @@
 
     window.addEventListener("resize", () => {
       if (window.innerWidth > 820) closeMenu();
+      else syncNavigationAvailability();
     });
+    syncNavigationAvailability();
   }
 
   document.querySelectorAll("[data-current-year]").forEach((element) => {
@@ -69,7 +82,10 @@
 
   if (backToTop) {
     const updateButton = () => {
-      backToTop.classList.toggle("is-visible", window.scrollY > 500);
+      const visible = window.scrollY > 500;
+      backToTop.classList.toggle("is-visible", visible);
+      backToTop.setAttribute("aria-hidden", String(!visible));
+      backToTop.tabIndex = visible ? 0 : -1;
     };
     window.addEventListener("scroll", updateButton, { passive: true });
     updateButton();

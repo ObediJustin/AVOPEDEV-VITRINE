@@ -248,21 +248,28 @@ try {
   await navigate(command, "index.html", 375);
   const menu = await evaluate(command, `(() => {
     const button = document.querySelector("[data-menu-toggle]");
+    const navigation = document.querySelector("[data-navigation]");
+    const closedNavigationUnavailable = navigation.inert && navigation.getAttribute("aria-hidden") === "true";
     button.click();
-    const opened = button.getAttribute("aria-expanded") === "true" && document.querySelector("[data-navigation]").classList.contains("is-open");
-    const focusEnteredMenu = document.activeElement === document.querySelector("[data-navigation] a");
+    const opened = button.getAttribute("aria-expanded") === "true" && navigation.classList.contains("is-open") && !navigation.inert;
+    const focusEnteredMenu = document.activeElement === navigation.querySelector("a");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     return {
+      closedNavigationUnavailable,
       opened,
       focusEnteredMenu,
       closed: button.getAttribute("aria-expanded") === "false",
+      closedNavigationRestored: navigation.inert && navigation.getAttribute("aria-hidden") === "true",
       focusReturned: document.activeElement === button,
-      labelRestored: button.getAttribute("aria-label") === "Ouvrir le menu"
+      labelRestored: button.getAttribute("aria-label") === "Ouvrir le menu",
+      backToTopExcluded: document.querySelector("[data-back-to-top]").tabIndex === -1
     };
   })()`);
   check(menu.opened && menu.closed, "Le menu mobile ne s’ouvre ou ne se ferme pas correctement.");
+  check(menu.closedNavigationUnavailable && menu.closedNavigationRestored, "La navigation mobile fermée reste disponible aux technologies d’assistance.");
   check(menu.focusEnteredMenu && menu.focusReturned, "Le focus du menu mobile n’est pas correctement géré.");
   check(menu.labelRestored, "Le libellé accessible du menu mobile n’est pas restauré.");
+  check(menu.backToTopExcluded, "Le bouton de retour en haut invisible reste dans l’ordre de tabulation.");
 
   await navigate(command, "gallery.html", 768);
   await waitForExpression(command, 'document.querySelectorAll("[data-gallery] figure").length === 15', "La galerie JSON ne s’est pas chargée.");

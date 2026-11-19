@@ -26,6 +26,7 @@
     const button = document.createElement("button");
     button.type = "button";
     button.setAttribute("aria-label", `Agrandir : ${item.title}`);
+    button.setAttribute("aria-haspopup", "dialog");
     const media = document.createElement("img");
     media.src = item.src;
     if (item.srcset) {
@@ -111,6 +112,7 @@
         button.type = "button";
         button.dataset.filter = category;
         button.setAttribute("aria-pressed", "false");
+        button.setAttribute("aria-controls", "gallery-grid");
         button.textContent = window.AVOPEDEV_CONTENT.getGalleryCategoryLabel(category);
         filters.append(button);
       });
