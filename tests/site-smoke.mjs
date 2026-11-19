@@ -68,7 +68,15 @@ async function navigate(command, page, width = 1440, height = 900) {
     mobile: width < 820
   });
   await command("Page.navigate", { url: pathToFileURL(join(projectRoot, page)).href });
-  await delay(500);
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const readiness = await command("Runtime.evaluate", {
+      expression: 'document.readyState === "complete" && Boolean(document.querySelector(".site-header"))',
+      returnByValue: true
+    });
+    if (readiness.result.value) return;
+    await delay(100);
+  }
+  throw new Error(`La page ${page} n’a pas terminé son chargement.`);
 }
 
 async function evaluate(command, expression) {
