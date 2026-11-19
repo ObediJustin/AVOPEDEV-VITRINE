@@ -1304,6 +1304,12 @@ h3 {
   border-radius: var(--radius-sm);
 }
 
+.form-field input[aria-invalid="true"],
+.form-field textarea[aria-invalid="true"] {
+  background: var(--orange-soft);
+  border-color: var(--orange-deep);
+}
+
 .form-field textarea {
   min-height: 160px;
   resize: vertical;
@@ -1312,6 +1318,26 @@ h3 {
 .form-note {
   margin: 1rem 0 0;
   font-size: 0.86rem;
+}
+
+.form-note a {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.form-error {
+  min-height: 1.25rem;
+  color: var(--orange-deep);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.form-status {
+  min-height: 1.5rem;
+  margin: 0.85rem 0 0;
+  color: var(--green);
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 
 .cta-panel {
