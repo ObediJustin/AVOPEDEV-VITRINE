@@ -614,6 +614,7 @@ h3 {
   border-radius: var(--radius);
   isolation: isolate;
   text-decoration: none;
+  transition: box-shadow 240ms ease, transform 240ms ease;
 }
 
 .domain-card::after {
@@ -636,6 +637,11 @@ h3 {
 
 .domain-card:hover img {
   transform: scale(1.04);
+}
+
+.domain-card:hover {
+  box-shadow: 0 20px 42px rgba(16, 61, 45, 0.2);
+  transform: translateY(-4px);
 }
 
 .domain-card h3 {
@@ -761,6 +767,12 @@ h3 {
   color: var(--ink-soft);
   background: var(--white);
   border-radius: var(--radius);
+  transition: box-shadow 240ms ease, transform 240ms ease;
+}
+
+.achievement-feature:hover {
+  box-shadow: 0 18px 36px rgba(11, 46, 34, 0.26);
+  transform: translateY(-4px);
 }
 
 .achievement-feature img {
@@ -1182,6 +1194,14 @@ h3 {
   z-index: 1;
 }
 
+.cta-actions {
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
 .site-footer {
   color: rgba(255, 255, 255, 0.8);
   background: var(--green-deep);
@@ -1474,6 +1494,15 @@ h3 {
   }
 
   .button-row .button {
+    width: 100%;
+  }
+
+  .cta-actions {
+    display: grid;
+    width: 100%;
+  }
+
+  .cta-actions .button {
     width: 100%;
   }
 
