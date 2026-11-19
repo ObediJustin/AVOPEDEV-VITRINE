@@ -19,8 +19,10 @@ Ouvrir `data/news.json` et ajouter un objet dans la liste. Cet exemple sert uniq
   "category": "Catégorie validée",
   "summary": "Résumé validé.",
   "content": "Premier paragraphe.\n\nDeuxième paragraphe.",
-  "image": "assets/images/nom-fichier.jpg",
+  "image": "assets/images/nom-fichier.webp",
   "alt": "Description factuelle de l’image",
+  "imageWidth": 1600,
+  "imageHeight": 1067,
   "status": "draft"
 }
 ```
@@ -31,11 +33,12 @@ Règles à respecter :
 - saisir la date au format `AAAA-MM-JJ` ;
 - copier au préalable l’image validée dans `assets/images/` ;
 - décrire l’image avec un texte alternatif factuel ;
+- indiquer les dimensions réelles avec `imageWidth` et `imageHeight` pour éviter les décalages de mise en page ;
 - séparer les paragraphes du contenu avec `\n\n` ;
 - commencer avec `"status": "draft"`, puis passer à `"published"` après validation éditoriale ;
 - placer une virgule entre deux objets JSON, mais pas après le dernier objet.
 
-Une actualité publiée apparaît automatiquement sur la page Actualités. Les trois plus récentes apparaissent sur l’accueil. Son adresse est construite sous la forme `article.html?id=identifiant-stable`.
+Une actualité publiée apparaît automatiquement sur la page Actualités. Les trois plus récentes apparaissent sur l’accueil. Après le build, sa page statique est créée sous la forme `articles/identifiant-stable.html`. Les anciens liens `article.html?id=identifiant-stable` restent compatibles, mais ne sont pas indexés.
 
 ## 2. Modifier une actualité
 
@@ -66,7 +69,8 @@ Copier l’image autorisée dans `assets/images/`, relever ses dimensions réell
 ```json
 {
   "id": "photo-identifiant-stable",
-  "src": "assets/images/nom-fichier.jpg",
+  "src": "assets/images/nom-fichier.webp",
+  "srcset": "assets/images/nom-fichier-720.webp 720w, assets/images/nom-fichier.webp 1600w",
   "title": "Titre validé",
   "description": "Description factuelle validée.",
   "category": "sensibilisation",
@@ -77,6 +81,14 @@ Copier l’image autorisée dans `assets/images/`, relever ses dimensions réell
 ```
 
 Les catégories actuelles sont `environnement`, `agriculture`, `sensibilisation`, `communautes` et `elevage`. Utiliser uniquement des photos dont les droits de diffusion et, lorsqu’il y a lieu, le consentement des personnes représentées ont été confirmés.
+
+Conserver l’original JPEG et générer les variantes WebP avec :
+
+```powershell
+node scripts/optimize-images.mjs
+```
+
+Ce script local utilise Chrome, conserve l’original et n’écrit un WebP complet que s’il est au moins 5 % plus léger. Pour les images de plus de 1 000 px de large, il crée aussi une variante 720 px. Reporter ensuite les chemins réellement produits dans `gallery.json`.
 
 ## 5. Modifier une photo ou sa catégorie
 
@@ -94,10 +106,11 @@ Ne publier aucun réseau social, téléphone, adresse ou horaire qui n’a pas �
 
 ## 7. Vérifier localement
 
-Une ouverture directe en `file://` ne permet pas toujours de charger les fichiers JSON. Depuis le dossier du site, démarrer un serveur :
+Construire le dossier public puis le servir localement :
 
 ```powershell
-npx serve .
+npm run build
+npx serve dist
 ```
 
 Ouvrir ensuite l’adresse locale affichée et contrôler au minimum :
@@ -111,10 +124,10 @@ Ouvrir ensuite l’adresse locale affichée et contrôler au minimum :
 Lancer aussi le contrôle automatisé :
 
 ```powershell
-node tests/site-smoke.mjs
+npm test
 ```
 
-Un fichier JSON invalide empêche le chargement de toute la collection concernée. En cas d’erreur, vérifier d’abord les guillemets, accolades, crochets et virgules.
+Le test reconstruit également `dist`, vérifie les articles générés et confirme qu’aucun brouillon ni fichier de développement n’est publié. Un fichier JSON invalide empêche le chargement de toute la collection concernée : vérifier d’abord les guillemets, accolades, crochets et virgules.
 
 ## 8. Publier via GitHub et Vercel
 
@@ -129,10 +142,14 @@ git push origin main
 
 Adapter la commande `git add` aux fichiers réellement modifiés, notamment les pages HTML si les coordonnées ont changé. Ne pas inclure de fichiers personnels ou non validés.
 
-Lorsque le dépôt GitHub est connecté à un projet Vercel, le `push` sur la branche de production déclenche normalement un nouveau déploiement. Ce site n’exige ni commande de build ni backend : Vercel doit servir la racine du projet comme site statique. Contrôler le déploiement dans le tableau de bord Vercel, puis vérifier l’URL publique. Le domaine officiel et les variables de projet se configurent dans Vercel, pas dans les fichiers JSON.
+Lorsque le dépôt GitHub est connecté à un projet Vercel, le `push` sur la branche de production déclenche normalement un nouveau déploiement. `vercel.json` demande à Vercel d’exécuter `npm run build` et de servir uniquement le dossier `dist`. Aucun backend n’est créé.
 
-## Limite SEO des articles dynamiques
+Contrôler le résultat du build et l’URL publique dans le tableau de bord Vercel. L’adresse `avopedev.vercel.app` est seulement envisagée : ne pas la considérer disponible tant que Vercel ne l’a pas réellement attribuée au projet.
 
-La page `article.html` charge son contenu dans le navigateur en fonction du paramètre `id`. Le titre et la description sont mis à jour en JavaScript, mais certains robots, aperçus de réseaux sociaux et outils de partage peuvent ne voir que les métadonnées génériques du fichier HTML.
+Après confirmation de l’URL HTTPS, remplacer uniquement la chaîne vide du champ `productionUrl` dans `site.config.json` par l’adresse exacte attribuée. Le build utilisera cette valeur pour les liens canoniques, les URL Open Graph, `sitemap.xml` et `robots.txt`. Relancer ensuite `npm run build` et `npm test` avant le push.
 
-Si le référencement individuel ou les aperçus sociaux de chaque actualité deviennent prioritaires, il faudra générer une page HTML statique par article au moment du déploiement, ou adopter un générateur de site/CMS capable de pré-rendre ces pages.
+## SEO des articles
+
+`scripts/generate-articles.mjs` lit uniquement les actualités publiées et produit une page HTML complète avec titre, description, Open Graph, date et contenu. `npm run build` lance automatiquement cette génération dans `dist/articles/`.
+
+La page dynamique `article.html?id=…` reste disponible pour les anciens liens mais porte une directive `noindex`. Tant que `productionUrl` n’est pas configurée, les pages générées ne reçoivent volontairement ni URL canonique ni `og:url` absolue.

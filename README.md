@@ -8,6 +8,7 @@ Site institutionnel statique et indépendant de l’application PHP existante.
 - CSS3
 - JavaScript vanilla
 - Aucune base de données, aucun framework, aucune dépendance d’exécution
+- Node.js utilisé uniquement pour préparer le dossier statique `dist`
 
 ## Pages
 
@@ -17,28 +18,30 @@ Site institutionnel statique et indépendant de l’application PHP existante.
 - `achievements.html` — réalisations documentées
 - `gallery.html` — galerie filtrable et visionneuse accessible
 - `news.html` — actualités alimentées localement
-- `article.html` — modèle réutilisable pour lire une actualité publiée
+- `article.html` — page de compatibilité pour les anciens liens dynamiques
+- `articles/<id>.html` — pages SEO générées pour les actualités publiées
 - `contact.html` — coordonnées et préparation d’un e-mail
 
 ## Tester localement
 
-Le site charge ses contenus depuis des fichiers JSON. Il doit donc être ouvert avec un petit serveur local :
+Construire d’abord le site public, y compris les articles et le sitemap :
 
 ```powershell
-npx serve .
+npm run build
+npx serve dist
 ```
 
-Puis ouvrir l’adresse indiquée par le serveur.
+Le dossier `dist` est recréé à chaque build. Il contient uniquement les ressources destinées à la publication ; les brouillons, tests, scripts et guides n’y sont pas copiés.
 
 ## Vérification automatique
 
 Le test de fumée utilise directement Chrome et Node.js, sans dépendance npm :
 
 ```powershell
-node tests/site-smoke.mjs
+npm test
 ```
 
-Il contrôle notamment les largeurs 320, 375, 390, 768, 1024 et 1440 px, l’absence de débordement horizontal, le chargement des images, le menu mobile, les filtres et la visionneuse de la galerie, les parcours d’actualités, les articles et la validation du formulaire de contact.
+Il reconstruit `dist` puis contrôle notamment les largeurs 320, 375, 390, 667×375, 768, 1024 et 1440 px, l’absence de débordement horizontal, le chargement des images, le menu mobile, les filtres, la visionneuse, les articles générés, l’exclusion des brouillons, les en-têtes de sécurité et le formulaire de contact.
 
 ## Gérer les contenus
 
@@ -49,13 +52,20 @@ Ces fichiers JSON constituent une gestion de contenu statique : ils ne remplacen
 ## Avant publication
 
 1. Valider tous les contenus, coordonnées et légendes avec AVOPEDEV.
-2. Fournir le nom de domaine officiel.
-3. Remplacer `https://example.invalid` dans `sitemap.xml`.
-4. Ajouter l’URL du sitemap dans `robots.txt`.
-5. Remplacer les chemins Open Graph relatifs par des URL absolues si la plateforme l’exige.
-6. Compresser les images PNG les plus lourdes pour la production.
-7. Ajouter uniquement des liens de réseaux sociaux officiellement confirmés.
-8. Choisir un service externe si le formulaire doit envoyer les messages sans ouvrir la messagerie du visiteur.
+2. Créer le projet Vercel avec la racine de ce dépôt et vérifier l’URL réellement attribuée.
+3. Renseigner cette URL HTTPS dans `productionUrl` de `site.config.json`.
+4. Relancer `npm run build` et vérifier les canoniques, Open Graph, `sitemap.xml` et `robots.txt` dans `dist`.
+5. Lancer `npm test`.
+6. Ajouter uniquement des liens de réseaux sociaux officiellement confirmés.
+7. Choisir un service externe uniquement si le formulaire doit un jour envoyer les messages sans ouvrir la messagerie du visiteur.
+
+Le sous-domaine `avopedev.vercel.app` est envisagé, mais il ne doit être inscrit dans `site.config.json` qu’après confirmation de son attribution dans Vercel.
+
+## Déploiement Vercel
+
+Le fichier `vercel.json` demande à Vercel d’exécuter `npm run build` et de publier uniquement `dist`. Aucun backend, aucune fonction et aucune réécriture de route ne sont nécessaires. Les en-têtes de sécurité sont également déclarés dans ce fichier.
+
+Une connexion du dépôt GitHub au projet Vercel permet ensuite à chaque push sur la branche de production de déclencher un build. Aucun déploiement n’est effectué automatiquement par les scripts locaux.
 
 ## Accessibilité et interactions
 
