@@ -66,6 +66,7 @@ const mockNews = [
 ];
 
 const generatorFixture = mkdtempSync(join(tmpdir(), "avopedev-generator-"));
+let generatedArticleFixture = "";
 try {
   const fixtureNewsPath = join(generatorFixture, "news.json");
   const fixtureConfigPath = join(generatorFixture, "site.config.json");
@@ -83,11 +84,11 @@ try {
   if (generatedFiles.join(",") !== "test-agriculture.html,test-environment.html") {
     throw new Error("Le générateur doit publier les deux actualités validées et exclure le brouillon.");
   }
-  const generatedArticle = readFileSync(join(fixtureOutputPath, "test-environment.html"), "utf8");
-  if (!generatedArticle.includes('<link rel="canonical" href="https://avopedev.example.test/articles/test-environment.html">')) {
+  generatedArticleFixture = readFileSync(join(fixtureOutputPath, "test-environment.html"), "utf8");
+  if (!generatedArticleFixture.includes('<link rel="canonical" href="https://avopedev.example.test/articles/test-environment.html">')) {
     throw new Error("Le lien canonique de l’article généré est absent.");
   }
-  if (!generatedArticle.includes("Premier paragraphe de test.") || generatedArticle.includes("article.js")) {
+  if (!generatedArticleFixture.includes("Premier paragraphe de test.") || generatedArticleFixture.includes("article.js")) {
     throw new Error("Le contenu statique de l’article généré est incorrect.");
   }
   const sitemapOutputPath = join(generatorFixture, "public");
@@ -123,6 +124,11 @@ const staticServer = createServer(async (request, response) => {
   try {
     const requestUrl = new URL(request.url, "http://127.0.0.1");
     const pathname = decodeURIComponent(requestUrl.pathname === "/" ? "/index.html" : requestUrl.pathname);
+    if (pathname === "/articles/test-environment.html") {
+      response.writeHead(200, { ...securityHeaders, "Content-Type": mimeTypes[".html"] });
+      response.end(generatedArticleFixture);
+      return;
+    }
     if (pathname === "/data/news.json" && serveMockNews) {
       response.writeHead(200, { ...securityHeaders, "Content-Type": mimeTypes[".json"] });
       response.end(JSON.stringify(mockNews));
@@ -338,6 +344,17 @@ try {
   check(newsInteractions.initialTitles[0] === "Test environnement récent", "Le tri décroissant des actualités est incorrect.");
   check(newsInteractions.searchCount === 1, "La recherche d’actualités est incorrecte.");
   check(newsInteractions.categoryCount === 1, "Le filtre de catégorie des actualités est incorrect.");
+
+  await navigate(command, "articles/test-environment.html", 320, 800);
+  const generatedArticle = await evaluate(command, `({
+    title: document.querySelector("h1")?.textContent,
+    paragraphs: document.querySelectorAll(".article-body p").length,
+    overflow: document.documentElement.scrollWidth > innerWidth,
+    brokenImages: [...document.images].filter((image) => image.complete && image.naturalWidth === 0).length
+  })`);
+  check(generatedArticle.title === "Test environnement récent", "La page article statique n’affiche pas le bon titre.");
+  check(generatedArticle.paragraphs === 2, "Le contenu de la page article statique est incomplet.");
+  check(!generatedArticle.overflow && generatedArticle.brokenImages === 0, "La page article statique est incorrecte à 320 px.");
 
   await navigate(command, "article.html?id=test-environment", 1024);
   await waitForExpression(command, '!document.querySelector("[data-article-content]").hidden', "L’article de test ne s’est pas affiché.");
