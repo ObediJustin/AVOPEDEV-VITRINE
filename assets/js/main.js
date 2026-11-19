@@ -93,7 +93,11 @@
       },
       { threshold: 0.12 }
     );
-    revealItems.forEach((item) => observer.observe(item));
+    revealItems.forEach((item, index) => {
+      item.style.setProperty("--reveal-delay", `${(index % 3) * 70}ms`);
+      observer.observe(item);
+    });
+    document.documentElement.classList.add("reveal-ready");
   }
 
   const contactForm = document.querySelector("[data-mail-form]");
