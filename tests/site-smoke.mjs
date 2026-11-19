@@ -1,5 +1,5 @@
-import { spawn } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
@@ -53,6 +53,35 @@ const mockNews = [
     status: "draft"
   }
 ];
+
+const generatorFixture = mkdtempSync(join(tmpdir(), "avopedev-generator-"));
+try {
+  const fixtureNewsPath = join(generatorFixture, "news.json");
+  const fixtureConfigPath = join(generatorFixture, "site.config.json");
+  const fixtureOutputPath = join(generatorFixture, "articles");
+  writeFileSync(fixtureNewsPath, JSON.stringify(mockNews), "utf8");
+  writeFileSync(fixtureConfigPath, JSON.stringify({ productionUrl: "https://avopedev.example.test" }), "utf8");
+  const generation = spawnSync(process.execPath, [
+    join(projectRoot, "scripts", "generate-articles.mjs"),
+    "--news", fixtureNewsPath,
+    "--output", fixtureOutputPath,
+    "--config", fixtureConfigPath
+  ], { encoding: "utf8" });
+  if (generation.status !== 0) throw new Error(generation.stderr || "Le générateur d’articles a échoué.");
+  const generatedFiles = readdirSync(fixtureOutputPath).filter((file) => file.endsWith(".html")).sort();
+  if (generatedFiles.join(",") !== "test-agriculture.html,test-environment.html") {
+    throw new Error("Le générateur doit publier les deux actualités validées et exclure le brouillon.");
+  }
+  const generatedArticle = readFileSync(join(fixtureOutputPath, "test-environment.html"), "utf8");
+  if (!generatedArticle.includes('<link rel="canonical" href="https://avopedev.example.test/articles/test-environment.html">')) {
+    throw new Error("Le lien canonique de l’article généré est absent.");
+  }
+  if (!generatedArticle.includes("Premier paragraphe de test.") || generatedArticle.includes("article.js")) {
+    throw new Error("Le contenu statique de l’article généré est incorrect.");
+  }
+} finally {
+  rmSync(generatorFixture, { recursive: true, force: true });
+}
 let serveMockNews = false;
 
 const staticServer = createServer(async (request, response) => {

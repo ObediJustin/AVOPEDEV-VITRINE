@@ -76,7 +76,7 @@
     year: "numeric"
   }).format(new Date(`${date}T12:00:00`));
 
-  const getArticleUrl = (id) => `article.html?id=${encodeURIComponent(id)}`;
+  const getArticleUrl = (id) => `articles/${encodeURIComponent(id)}.html`;
 
   const createNewsCard = (item, { headingLevel = "h2" } = {}) => {
     const article = document.createElement("article");
