@@ -90,20 +90,30 @@ const check = (condition, message) => {
 try {
   await waitForChrome();
   const { socket, command } = await openSession();
-  const widths = [320, 375, 768, 1024, 1440];
+  const viewports = [
+    { width: 320, height: 800 },
+    { width: 375, height: 812 },
+    { width: 390, height: 844 },
+    { width: 667, height: 375 },
+    { width: 768, height: 900 },
+    { width: 1024, height: 900 },
+    { width: 1440, height: 900 }
+  ];
 
-  for (const width of widths) {
-    await navigate(command, "index.html", width);
+  for (const { width, height } of viewports) {
+    await navigate(command, "index.html", width, height);
     const metrics = await evaluate(command, `({
       innerWidth,
       scrollWidth: document.documentElement.scrollWidth,
       brokenImages: [...document.images].filter((image) => image.complete && image.naturalWidth === 0).length,
-      h1: document.querySelectorAll("h1").length
+      h1: document.querySelectorAll("h1").length,
+      headerCtaVisible: document.querySelector(".header-cta").offsetParent !== null
     })`);
-    report.push({ page: "index.html", width, ...metrics });
-    check(metrics.scrollWidth <= metrics.innerWidth, `Débordement horizontal à ${width}px.`);
-    check(metrics.brokenImages === 0, `Image non chargée sur l’accueil à ${width}px.`);
-    check(metrics.h1 === 1, `Hiérarchie H1 incorrecte à ${width}px.`);
+    report.push({ page: "index.html", width, height, ...metrics });
+    check(metrics.scrollWidth <= metrics.innerWidth, `Débordement horizontal à ${width}×${height}px.`);
+    check(metrics.brokenImages === 0, `Image non chargée sur l’accueil à ${width}×${height}px.`);
+    check(metrics.h1 === 1, `Hiérarchie H1 incorrecte à ${width}×${height}px.`);
+    if (width >= 1024) check(metrics.headerCtaVisible, `Le bouton Contact du header est masqué à ${width}px.`);
   }
 
   await navigate(command, "index.html", 375);
