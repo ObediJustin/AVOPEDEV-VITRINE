@@ -16,6 +16,7 @@ const mimeTypes = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".png": "image/png",
+  ".webp": "image/webp",
   ".xml": "application/xml; charset=utf-8"
 };
 const mockNews = [

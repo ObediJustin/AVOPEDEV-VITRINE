@@ -1,7 +1,8 @@
 [
   {
     "id": "pepiniere-avopedev",
-    "src": "assets/images/pepiniere-avopedev.jpg",
+    "src": "assets/images/pepiniere-avopedev.webp",
+    "srcset": "assets/images/pepiniere-avopedev-720.webp 720w, assets/images/pepiniere-avopedev.webp 1390w",
     "title": "Pépinière de l’AVOPEDEV",
     "description": "Plantules forestières produites dans le cadre des actions de reboisement.",
     "category": "environnement",
@@ -11,7 +12,7 @@
   },
   {
     "id": "paves-ecologiques",
-    "src": "assets/images/paves-ecologiques.jpg",
+    "src": "assets/images/paves-ecologiques.webp",
     "title": "Fabrication de pavés écologiques",
     "description": "Valorisation de déchets plastiques dans la fabrication de pavés écologiques.",
     "category": "environnement",
@@ -21,7 +22,7 @@
   },
   {
     "id": "champ-riz-kyatenga",
-    "src": "assets/images/champ-riz-kyatenga.jpg",
+    "src": "assets/images/champ-riz-kyatenga.webp",
     "title": "Champ de riz à Kyatenga",
     "description": "Champ de riz dans le bassin de production de Kyatenga.",
     "category": "agriculture",
@@ -32,7 +33,7 @@
   },
   {
     "id": "sensibilisation-bonnes-pratiques",
-    "src": "assets/images/sensibilisation-bonnes-pratiques.jpg",
+    "src": "assets/images/sensibilisation-bonnes-pratiques.webp",
     "title": "Sensibilisation aux bonnes pratiques",
     "description": "Séance de sensibilisation communautaire animée par AVOPEDEV.",
     "category": "sensibilisation",
@@ -42,7 +43,7 @@
   },
   {
     "id": "semences-riz-nerica",
-    "src": "assets/images/semences-riz-nerica.jpg",
+    "src": "assets/images/semences-riz-nerica.webp",
     "title": "Semences de riz NERICA 4",
     "description": "Semences de riz NERICA 4 destinées à l’accompagnement des producteurs.",
     "category": "agriculture",
@@ -52,7 +53,8 @@
   },
   {
     "id": "semences-haricots",
-    "src": "assets/images/semences-haricots.jpg",
+    "src": "assets/images/semences-haricots.webp",
+    "srcset": "assets/images/semences-haricots-720.webp 720w, assets/images/semences-haricots.webp 1600w",
     "title": "Semences de haricot",
     "description": "Semences de haricot utilisées dans les activités de sécurité alimentaire.",
     "category": "agriculture",
@@ -62,7 +64,8 @@
   },
   {
     "id": "assainissement-communautaire",
-    "src": "assets/images/assainissement.jpg",
+    "src": "assets/images/assainissement.webp",
+    "srcset": "assets/images/assainissement-720.webp 720w, assets/images/assainissement.webp 1600w",
     "title": "Mobilisation pour l’assainissement",
     "description": "Activité communautaire consacrée à l’amélioration du cadre de vie.",
     "category": "communautes",
@@ -72,7 +75,7 @@
   },
   {
     "id": "elevage-lapins",
-    "src": "assets/images/elevage-lapins.jpg",
+    "src": "assets/images/elevage-lapins.webp",
     "title": "Élevage de lapins",
     "description": "Activité d’élevage accompagnée par AVOPEDEV.",
     "category": "elevage",
@@ -82,7 +85,7 @@
   },
   {
     "id": "elevage-lapins-installation",
-    "src": "assets/images/elevage-lapins-2.jpg",
+    "src": "assets/images/elevage-lapins-2.webp",
     "title": "Installation d’élevage",
     "description": "Lapins dans une installation d’élevage.",
     "category": "elevage",
@@ -92,7 +95,8 @@
   },
   {
     "id": "elevage-lapins-groupe",
-    "src": "assets/images/elevage-lapins-groupe.jpg",
+    "src": "assets/images/elevage-lapins-groupe.webp",
+    "srcset": "assets/images/elevage-lapins-groupe-720.webp 720w, assets/images/elevage-lapins-groupe.webp 1600w",
     "title": "Accompagnement d’une activité d’élevage",
     "description": "Activité communautaire autour de l’élevage de lapins.",
     "category": "elevage",
@@ -102,7 +106,7 @@
   },
   {
     "id": "recyclage-dechets-1",
-    "src": "assets/images/recyclage-1.jpg",
+    "src": "assets/images/recyclage-1.webp",
     "title": "Recyclage des déchets plastiques",
     "description": "Activité de collecte et de valorisation des déchets plastiques.",
     "category": "environnement",
@@ -112,7 +116,7 @@
   },
   {
     "id": "recyclage-dechets-2",
-    "src": "assets/images/recyclage-2.jpg",
+    "src": "assets/images/recyclage-2.webp",
     "title": "Tri des déchets",
     "description": "Tri de matières destinées à la valorisation.",
     "category": "environnement",
@@ -122,7 +126,7 @@
   },
   {
     "id": "recyclage-dechets-3",
-    "src": "assets/images/recyclage-3.jpg",
+    "src": "assets/images/recyclage-3.webp",
     "title": "Collecte en vue du recyclage",
     "description": "Déchets collectés dans le cadre des actions environnementales.",
     "category": "environnement",
@@ -132,7 +136,7 @@
   },
   {
     "id": "recyclage-dechets-4",
-    "src": "assets/images/recyclage-4.jpg",
+    "src": "assets/images/recyclage-4.webp",
     "title": "Matières plastiques collectées",
     "description": "Matières plastiques réunies pour leur valorisation.",
     "category": "environnement",
@@ -142,7 +146,8 @@
   },
   {
     "id": "mobilisation-communautaire",
-    "src": "assets/images/scolarisation.jpg",
+    "src": "assets/images/scolarisation.webp",
+    "srcset": "assets/images/scolarisation-720.webp 720w, assets/images/scolarisation.webp 1600w",
     "title": "Mobilisation communautaire",
     "description": "Activité communautaire réunissant enfants et adultes.",
     "category": "communautes",

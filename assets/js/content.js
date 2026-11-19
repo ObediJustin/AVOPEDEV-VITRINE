@@ -51,6 +51,7 @@
   const normalizeGalleryItem = (item) => ({
     id: String(item.id || "").trim(),
     src: String(item.src || "").trim(),
+    srcset: String(item.srcset || "").trim(),
     title: String(item.title || "").trim(),
     description: String(item.description || "").trim(),
     category: String(item.category || "").trim(),

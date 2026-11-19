@@ -28,6 +28,10 @@
     button.setAttribute("aria-label", `Agrandir : ${item.title}`);
     const media = document.createElement("img");
     media.src = item.src;
+    if (item.srcset) {
+      media.srcset = item.srcset;
+      media.sizes = "(max-width: 760px) calc(100vw - 2rem), (max-width: 1100px) 50vw, 380px";
+    }
     media.alt = item.alt;
     media.width = item.width;
     media.height = item.height;
@@ -53,6 +57,8 @@
     currentIndex = (index + visibleItems.length) % visibleItems.length;
     const item = visibleItems[currentIndex];
     image.src = item.src;
+    image.srcset = item.srcset;
+    image.sizes = "90vw";
     image.alt = item.alt;
     caption.textContent = item.description ? `${item.title} — ${item.description}` : item.title;
     status.textContent = `${currentIndex + 1} sur ${visibleItems.length}`;
@@ -69,6 +75,7 @@
   const closeLightbox = () => {
     lightbox.hidden = true;
     image.src = "";
+    image.srcset = "";
     document.body.classList.remove("menu-open");
     previousFocus?.focus();
   };
