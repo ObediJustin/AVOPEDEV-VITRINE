@@ -111,10 +111,19 @@ try {
     const button = document.querySelector("[data-menu-toggle]");
     button.click();
     const opened = button.getAttribute("aria-expanded") === "true" && document.querySelector("[data-navigation]").classList.contains("is-open");
+    const focusEnteredMenu = document.activeElement === document.querySelector("[data-navigation] a");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    return { opened, closed: button.getAttribute("aria-expanded") === "false" };
+    return {
+      opened,
+      focusEnteredMenu,
+      closed: button.getAttribute("aria-expanded") === "false",
+      focusReturned: document.activeElement === button,
+      labelRestored: button.getAttribute("aria-label") === "Ouvrir le menu"
+    };
   })()`);
   check(menu.opened && menu.closed, "Le menu mobile ne s’ouvre ou ne se ferme pas correctement.");
+  check(menu.focusEnteredMenu && menu.focusReturned, "Le focus du menu mobile n’est pas correctement géré.");
+  check(menu.labelRestored, "Le libellé accessible du menu mobile n’est pas restauré.");
 
   await navigate(command, "gallery.html", 768);
   const gallery = await evaluate(command, `(() => {

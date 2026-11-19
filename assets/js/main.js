@@ -4,19 +4,29 @@
   const navigation = document.querySelector("[data-navigation]");
   const backToTop = document.querySelector("[data-back-to-top]");
 
-  const closeMenu = () => {
+  const closeMenu = (restoreFocus = false) => {
     if (!menuButton || !navigation) return;
     menuButton.setAttribute("aria-expanded", "false");
+    menuButton.setAttribute("aria-label", "Ouvrir le menu");
     navigation.classList.remove("is-open");
     body.classList.remove("menu-open");
+    if (restoreFocus) menuButton.focus();
+  };
+
+  const openMenu = () => {
+    if (!menuButton || !navigation) return;
+    menuButton.setAttribute("aria-expanded", "true");
+    menuButton.setAttribute("aria-label", "Fermer le menu");
+    navigation.classList.add("is-open");
+    body.classList.add("menu-open");
+    navigation.querySelector("a")?.focus();
   };
 
   if (menuButton && navigation) {
     menuButton.addEventListener("click", () => {
       const open = menuButton.getAttribute("aria-expanded") === "true";
-      menuButton.setAttribute("aria-expanded", String(!open));
-      navigation.classList.toggle("is-open", !open);
-      body.classList.toggle("menu-open", !open);
+      if (open) closeMenu();
+      else openMenu();
     });
 
     navigation.addEventListener("click", (event) => {
@@ -24,7 +34,27 @@
     });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeMenu();
+      const open = menuButton.getAttribute("aria-expanded") === "true";
+      if (!open) return;
+
+      if (event.key === "Escape") {
+        closeMenu(true);
+        return;
+      }
+
+      if (event.key === "Tab") {
+        const focusableItems = [menuButton, ...navigation.querySelectorAll("a")];
+        const firstItem = focusableItems[0];
+        const lastItem = focusableItems.at(-1);
+
+        if (event.shiftKey && document.activeElement === firstItem) {
+          event.preventDefault();
+          lastItem.focus();
+        } else if (!event.shiftKey && document.activeElement === lastItem) {
+          event.preventDefault();
+          firstItem.focus();
+        }
+      }
     });
 
     window.addEventListener("resize", () => {
