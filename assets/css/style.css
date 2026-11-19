@@ -961,14 +961,15 @@ h3 {
 .lightbox-next {
   position: absolute;
   display: grid;
-  width: 48px;
+  min-width: 48px;
   height: 48px;
   place-items: center;
   color: var(--white);
   background: rgba(255, 255, 255, 0.13);
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 50%;
-  font-size: 1.5rem;
+  font-size: 0.86rem;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -980,6 +981,7 @@ h3 {
 .lightbox-prev,
 .lightbox-next {
   top: 50%;
+  padding-inline: 0.85rem;
   transform: translateY(-50%);
 }
 
@@ -1239,14 +1241,15 @@ h3 {
   z-index: 900;
   right: 1rem;
   bottom: 1rem;
-  width: 46px;
+  width: 52px;
   height: 46px;
   color: var(--white);
   background: var(--green);
   border: 0;
   border-radius: 50%;
   box-shadow: var(--shadow);
-  font-size: 1.2rem;
+  font-size: 0.78rem;
+  font-weight: 900;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
