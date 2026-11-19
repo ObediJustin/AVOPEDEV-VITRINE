@@ -8,6 +8,12 @@ import { fileURLToPath } from "node:url";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const siteRoot = join(projectRoot, "dist");
+const vercelConfig = JSON.parse(readFileSync(join(projectRoot, "vercel.json"), "utf8"));
+const securityHeaderRule = vercelConfig.headers?.find((rule) => rule.source === "/(.*)");
+const securityHeaders = Object.fromEntries((securityHeaderRule?.headers || []).map(({ key, value }) => [key, value]));
+for (const requiredHeader of ["Content-Security-Policy", "Permissions-Policy", "Referrer-Policy", "Strict-Transport-Security", "X-Content-Type-Options"]) {
+  if (!securityHeaders[requiredHeader]) throw new Error(`En-tête de sécurité manquant : ${requiredHeader}`);
+}
 const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const debugPort = 9333;
 const mimeTypes = {
@@ -115,7 +121,7 @@ const staticServer = createServer(async (request, response) => {
     const requestUrl = new URL(request.url, "http://127.0.0.1");
     const pathname = decodeURIComponent(requestUrl.pathname === "/" ? "/index.html" : requestUrl.pathname);
     if (pathname === "/data/news.json" && serveMockNews) {
-      response.writeHead(200, { "Content-Type": mimeTypes[".json"] });
+      response.writeHead(200, { ...securityHeaders, "Content-Type": mimeTypes[".json"] });
       response.end(JSON.stringify(mockNews));
       return;
     }
@@ -125,7 +131,7 @@ const staticServer = createServer(async (request, response) => {
       return;
     }
     const body = await readFile(filePath);
-    response.writeHead(200, { "Content-Type": mimeTypes[extname(filePath)] || "application/octet-stream" });
+    response.writeHead(200, { ...securityHeaders, "Content-Type": mimeTypes[extname(filePath)] || "application/octet-stream" });
     response.end(body);
   } catch {
     response.writeHead(404).end("Not found");
