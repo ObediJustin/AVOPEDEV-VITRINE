@@ -9,6 +9,9 @@ import { fileURLToPath } from "node:url";
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const siteRoot = join(projectRoot, "dist");
 const vercelConfig = JSON.parse(readFileSync(join(projectRoot, "vercel.json"), "utf8"));
+if (vercelConfig.buildCommand !== "npm run build" || vercelConfig.outputDirectory !== "dist") {
+  throw new Error("La configuration Vercel doit construire et publier le dossier dist.");
+}
 const securityHeaderRule = vercelConfig.headers?.find((rule) => rule.source === "/(.*)");
 const securityHeaders = Object.fromEntries((securityHeaderRule?.headers || []).map(({ key, value }) => [key, value]));
 for (const requiredHeader of ["Content-Security-Policy", "Permissions-Policy", "Referrer-Policy", "Strict-Transport-Security", "X-Content-Type-Options"]) {
