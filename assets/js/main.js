@@ -3,6 +3,7 @@
   const menuButton = document.querySelector("[data-menu-toggle]");
   const navigation = document.querySelector("[data-navigation]");
   const backToTop = document.querySelector("[data-back-to-top]");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const closeMenu = (restoreFocus = false) => {
     if (!menuButton || !navigation) return;
@@ -73,12 +74,11 @@
     window.addEventListener("scroll", updateButton, { passive: true });
     updateButton();
     backToTop.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
     });
   }
 
   const revealItems = document.querySelectorAll("[data-reveal]");
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (reduceMotion || !("IntersectionObserver" in window)) {
     revealItems.forEach((item) => item.classList.add("is-visible"));
