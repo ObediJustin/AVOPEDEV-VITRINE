@@ -17,11 +17,12 @@ Site institutionnel statique et indépendant de l’application PHP existante.
 - `achievements.html` — réalisations documentées
 - `gallery.html` — galerie filtrable et visionneuse accessible
 - `news.html` — actualités alimentées localement
+- `article.html` — modèle réutilisable pour lire une actualité publiée
 - `contact.html` — coordonnées et préparation d’un e-mail
 
 ## Tester localement
 
-Le site fonctionne par simple ouverture de `index.html`. Pour reproduire au mieux un hébergement web :
+Le site charge ses contenus depuis des fichiers JSON. Il doit donc être ouvert avec un petit serveur local :
 
 ```powershell
 npx serve .
@@ -37,23 +38,13 @@ Le test de fumée utilise directement Chrome et Node.js, sans dépendance npm :
 node tests/site-smoke.mjs
 ```
 
-Il contrôle notamment les largeurs 320, 375, 768, 1024 et 1440 px, l’absence de débordement horizontal, le chargement des images, la gestion du focus du menu mobile, la galerie au clavier et l’état vide des actualités.
+Il contrôle notamment les largeurs 320, 375, 390, 768, 1024 et 1440 px, l’absence de débordement horizontal, le chargement des images, le menu mobile, les filtres et la visionneuse de la galerie, les parcours d’actualités, les articles et la validation du formulaire de contact.
 
-## Ajouter une actualité
+## Gérer les contenus
 
-Modifier `data/news.js` et ajouter un objet dans `window.AVOPEDEV_NEWS` :
+Les actualités sont stockées dans `data/news.json` et les métadonnées de la galerie dans `data/gallery.json`. Le guide [CONTENT_GUIDE.md](CONTENT_GUIDE.md) décrit comment ajouter, modifier, masquer et publier ces contenus sans inventer d’information.
 
-```js
-{
-  title: "Titre vérifié",
-  date: "2026-11-19",
-  summary: "Résumé validé par AVOPEDEV.",
-  image: "assets/images/nom-image.jpg",
-  url: ""
-}
-```
-
-La liste est vide par défaut afin de ne pas inventer de nouvelles.
+Ces fichiers JSON constituent une gestion de contenu statique : ils ne remplacent pas une interface d’administration ou un CMS.
 
 ## Avant publication
 
