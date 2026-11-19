@@ -1042,11 +1042,54 @@ h3 {
   gap: 1rem;
 }
 
+.content-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.6fr);
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding: 1.25rem;
+  background: var(--green-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.content-toolbar select {
+  width: 100%;
+  min-height: 52px;
+  padding: 0.85rem 2.8rem 0.85rem 1rem;
+  color: var(--ink);
+  appearance: none;
+  background-color: var(--white);
+  background-image: linear-gradient(45deg, transparent 50%, var(--forest) 50%), linear-gradient(135deg, var(--forest) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-repeat: no-repeat;
+  background-size: 6px 6px, 6px 6px;
+  border: 1px solid rgba(16, 61, 45, 0.25);
+  border-radius: var(--radius-sm);
+}
+
+.content-status {
+  min-height: 1.7rem;
+  margin: 0 0 1.25rem;
+  color: var(--green);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .news-card {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+
+.news-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-3px);
 }
 
 .news-card img {
@@ -1056,7 +1099,30 @@ h3 {
 }
 
 .news-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 1.4rem;
+}
+
+.news-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0.25rem 0.65rem;
+  color: var(--forest);
+  background: var(--orange-soft);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 900;
 }
 
 .news-card time {
@@ -1069,6 +1135,10 @@ h3 {
 .news-card h2 {
   margin-top: 0.6rem;
   font-size: 1.45rem;
+}
+
+.news-card .button {
+  margin-top: auto;
 }
 
 .empty-state {
@@ -1093,6 +1163,15 @@ h3 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 2rem;
   font-weight: 700;
+}
+
+.empty-state .button-row {
+  justify-content: center;
+}
+
+.empty-state--error {
+  background: var(--orange-soft);
+  border-color: rgba(201, 99, 18, 0.3);
 }
 
 .contact-grid {
@@ -1439,6 +1518,10 @@ h3 {
   .values-grid,
   .news-grid,
   .achievement-showcase {
+    grid-template-columns: 1fr;
+  }
+
+  .content-toolbar {
     grid-template-columns: 1fr;
   }
 
