@@ -79,6 +79,18 @@ try {
   if (!generatedArticle.includes("Premier paragraphe de test.") || generatedArticle.includes("article.js")) {
     throw new Error("Le contenu statique de l’article généré est incorrect.");
   }
+  const sitemapOutputPath = join(generatorFixture, "public");
+  const sitemapGeneration = spawnSync(process.execPath, [
+    join(projectRoot, "scripts", "generate-sitemap.mjs"),
+    "--news", fixtureNewsPath,
+    "--config", fixtureConfigPath,
+    "--output", sitemapOutputPath
+  ], { encoding: "utf8" });
+  if (sitemapGeneration.status !== 0) throw new Error(sitemapGeneration.stderr || "La génération du sitemap a échoué.");
+  const generatedSitemap = readFileSync(join(sitemapOutputPath, "sitemap.xml"), "utf8");
+  if (!generatedSitemap.includes("articles/test-environment.html") || generatedSitemap.includes("test-draft")) {
+    throw new Error("Le sitemap doit inclure les publications et exclure les brouillons.");
+  }
 } finally {
   rmSync(generatorFixture, { recursive: true, force: true });
 }
