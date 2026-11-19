@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Ajoutez la ligne Sitemap avec l’URL officielle après choix du domaine.
