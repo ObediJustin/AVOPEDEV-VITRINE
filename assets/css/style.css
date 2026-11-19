@@ -601,6 +601,7 @@ h3 {
   background: var(--forest);
   border-radius: var(--radius);
   isolation: isolate;
+  text-decoration: none;
 }
 
 .domain-card::after {
@@ -633,6 +634,23 @@ h3 {
   margin: 0.7rem 0 0;
   font-size: 0.94rem;
   line-height: 1.55;
+}
+
+.domain-card-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--orange-soft);
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3rem;
+}
+
+.domain-card:focus-visible {
+  outline-color: var(--orange);
+  outline-offset: 5px;
 }
 
 .number-list {
