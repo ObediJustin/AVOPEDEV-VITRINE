@@ -29,6 +29,16 @@ npx serve .
 
 Puis ouvrir l’adresse indiquée par le serveur.
 
+## Vérification automatique
+
+Le test de fumée utilise directement Chrome et Node.js, sans dépendance npm :
+
+```powershell
+node tests/site-smoke.mjs
+```
+
+Il contrôle notamment les largeurs 320, 375, 768, 1024 et 1440 px, l’absence de débordement horizontal, le chargement des images, la gestion du focus du menu mobile, la galerie au clavier et l’état vide des actualités.
+
 ## Ajouter une actualité
 
 Modifier `data/news.js` et ajouter un objet dans `window.AVOPEDEV_NEWS` :
