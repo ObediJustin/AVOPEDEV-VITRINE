@@ -130,11 +130,13 @@ try {
     document.querySelector("[data-gallery] button").click();
     const lightbox = document.querySelector("[data-lightbox]");
     const opened = !lightbox.hidden;
+    const statusAnnounced = document.querySelector("[data-lightbox-status]").textContent === "1 sur 15";
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    return { opened, closed: lightbox.hidden, brokenImages: [...document.images].filter((image) => image.getAttribute("src") && image.complete && image.naturalWidth === 0).length };
+    return { opened, statusAnnounced, closed: lightbox.hidden, brokenImages: [...document.images].filter((image) => image.getAttribute("src") && image.complete && image.naturalWidth === 0).length };
   })()`);
   check(gallery.opened && gallery.closed, "La visionneuse de galerie ne répond pas au clavier.");
+  check(gallery.statusAnnounced, "La position courante de la galerie n’est pas annoncée.");
   check(gallery.brokenImages === 0, "Une image de la galerie ne charge pas.");
 
   await navigate(command, "news.html", 1024);

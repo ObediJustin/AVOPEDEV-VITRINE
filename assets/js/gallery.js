@@ -7,12 +7,14 @@
   const figures = Array.from(gallery.querySelectorAll("figure"));
   const image = lightbox.querySelector("[data-lightbox-image]");
   const caption = lightbox.querySelector("[data-lightbox-caption]");
+  const status = lightbox.querySelector("[data-lightbox-status]");
   const closeButton = lightbox.querySelector("[data-lightbox-close]");
   const previousButton = lightbox.querySelector("[data-lightbox-prev]");
   const nextButton = lightbox.querySelector("[data-lightbox-next]");
   let visibleFigures = figures;
   let currentIndex = 0;
   let previousFocus = null;
+  let touchStartX = null;
 
   const updateVisibleFigures = () => {
     visibleFigures = figures.filter((figure) => !figure.hidden);
@@ -26,6 +28,7 @@
     image.src = source.src;
     image.alt = source.alt;
     caption.textContent = figure.querySelector("figcaption")?.textContent || source.alt;
+    status.textContent = `${currentIndex + 1} sur ${visibleFigures.length}`;
   };
 
   const openLightbox = (figure) => {
@@ -64,6 +67,19 @@
   closeButton.addEventListener("click", closeLightbox);
   previousButton.addEventListener("click", () => showImage(currentIndex - 1));
   nextButton.addEventListener("click", () => showImage(currentIndex + 1));
+
+  image.addEventListener("touchstart", (event) => {
+    touchStartX = event.changedTouches[0]?.clientX ?? null;
+  }, { passive: true });
+
+  image.addEventListener("touchend", (event) => {
+    if (touchStartX === null) return;
+    const touchEndX = event.changedTouches[0]?.clientX ?? touchStartX;
+    const distance = touchEndX - touchStartX;
+    touchStartX = null;
+    if (Math.abs(distance) < 45) return;
+    showImage(currentIndex + (distance < 0 ? 1 : -1));
+  }, { passive: true });
 
   lightbox.addEventListener("click", (event) => {
     if (event.target === lightbox) closeLightbox();
