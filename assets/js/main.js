@@ -102,13 +102,48 @@
 
   const contactForm = document.querySelector("[data-mail-form]");
   if (contactForm) {
+    const fields = [...contactForm.querySelectorAll("input, textarea")];
+    const formStatus = contactForm.querySelector("[data-form-status]");
+
+    const getErrorMessage = (field) => {
+      if (field.required && !field.value.trim()) return "Ce champ est obligatoire.";
+      if (field.validity.typeMismatch) return "Saisissez une adresse e-mail valide.";
+      if (field.validity.tooShort) return `Saisissez au moins ${field.minLength} caractères.`;
+      if (!field.validity.valid) return "Vérifiez la valeur saisie.";
+      return "";
+    };
+
+    const validateField = (field) => {
+      const message = getErrorMessage(field);
+      const error = contactForm.querySelector(`[data-error-for="${field.id}"]`);
+      field.setAttribute("aria-invalid", String(Boolean(message)));
+      if (error) error.textContent = message;
+      return !message;
+    };
+
+    fields.forEach((field) => {
+      field.addEventListener("blur", () => validateField(field));
+      field.addEventListener("input", () => {
+        if (field.getAttribute("aria-invalid") === "true") validateField(field);
+        formStatus.textContent = "";
+      });
+    });
+
     contactForm.addEventListener("submit", (event) => {
       event.preventDefault();
+      const invalidFields = fields.filter((field) => !validateField(field));
+      if (invalidFields.length) {
+        formStatus.textContent = "Vérifiez les champs signalés avant de continuer.";
+        invalidFields[0].focus();
+        return;
+      }
+
       const data = new FormData(contactForm);
       const subject = encodeURIComponent(data.get("subject") || "Message depuis le site AVOPEDEV");
       const sender = data.get("name") ? `Nom : ${data.get("name")}\n` : "";
       const email = data.get("email") ? `E-mail : ${data.get("email")}\n\n` : "";
       const message = encodeURIComponent(`${sender}${email}${data.get("message") || ""}`);
+      formStatus.textContent = "Ouverture de votre application de messagerie…";
       window.location.href = `mailto:avopebenidev@gmail.com?subject=${subject}&body=${message}`;
     });
   }
