@@ -1174,6 +1174,14 @@ h3 {
   border-color: rgba(201, 99, 18, 0.3);
 }
 
+.latest-news-empty {
+  padding-block: 2.5rem;
+}
+
+.latest-news-empty h3 {
+  font-size: 1.5rem;
+}
+
 .article-back {
   display: inline-flex;
   min-height: 44px;

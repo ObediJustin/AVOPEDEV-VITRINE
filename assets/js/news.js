@@ -11,44 +11,6 @@
 
   let publishedItems = [];
 
-  const createNewsCard = (item) => {
-    const article = document.createElement("article");
-    article.className = "news-card";
-
-    if (item.image) {
-      const media = document.createElement("img");
-      media.src = item.image;
-      media.alt = item.alt;
-      media.loading = "lazy";
-      media.decoding = "async";
-      article.append(media);
-    }
-
-    const body = document.createElement("div");
-    body.className = "news-card-body";
-    const meta = document.createElement("div");
-    meta.className = "news-card-meta";
-    const category = document.createElement("span");
-    category.className = "category-badge";
-    category.textContent = item.category;
-    const time = document.createElement("time");
-    time.dateTime = item.date;
-    time.textContent = window.AVOPEDEV_CONTENT.formatNewsDate(item.date);
-    meta.append(category, time);
-
-    const heading = document.createElement("h2");
-    heading.textContent = item.title;
-    const summary = document.createElement("p");
-    summary.textContent = item.summary;
-    const link = document.createElement("a");
-    link.className = "button button--ghost";
-    link.href = window.AVOPEDEV_CONTENT.getArticleUrl(item.id);
-    link.textContent = "Lire la suite";
-    body.append(meta, heading, summary, link);
-    article.append(body);
-    return article;
-  };
-
   const showEmptyState = (hasPublishedItems) => {
     emptyTitle.textContent = hasPublishedItems ? "Aucun résultat" : "Aucune actualité publiée pour le moment";
     emptyMessage.textContent = hasPublishedItems
@@ -66,7 +28,7 @@
       return matchesCategory && (!query || searchableText.includes(query));
     });
 
-    container.replaceChildren(...filteredItems.map(createNewsCard));
+    container.replaceChildren(...filteredItems.map((item) => window.AVOPEDEV_CONTENT.createNewsCard(item)));
     emptyState.hidden = filteredItems.length > 0;
     if (!filteredItems.length) showEmptyState(publishedItems.length > 0);
     status.textContent = publishedItems.length

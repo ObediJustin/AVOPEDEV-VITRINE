@@ -48,10 +48,49 @@
 
   const getArticleUrl = (id) => `article.html?id=${encodeURIComponent(id)}`;
 
+  const createNewsCard = (item, { headingLevel = "h2" } = {}) => {
+    const article = document.createElement("article");
+    article.className = "news-card";
+
+    if (item.image) {
+      const media = document.createElement("img");
+      media.src = item.image;
+      media.alt = item.alt;
+      media.loading = "lazy";
+      media.decoding = "async";
+      article.append(media);
+    }
+
+    const body = document.createElement("div");
+    body.className = "news-card-body";
+    const meta = document.createElement("div");
+    meta.className = "news-card-meta";
+    const category = document.createElement("span");
+    category.className = "category-badge";
+    category.textContent = item.category;
+    const time = document.createElement("time");
+    time.dateTime = item.date;
+    time.textContent = formatNewsDate(item.date);
+    meta.append(category, time);
+
+    const heading = document.createElement(headingLevel);
+    heading.textContent = item.title;
+    const summary = document.createElement("p");
+    summary.textContent = item.summary;
+    const link = document.createElement("a");
+    link.className = "button button--ghost";
+    link.href = getArticleUrl(item.id);
+    link.textContent = "Lire la suite";
+    body.append(meta, heading, summary, link);
+    article.append(body);
+    return article;
+  };
+
   window.AVOPEDEV_CONTENT = Object.freeze({
     loadNews,
     loadPublishedNews,
     formatNewsDate,
-    getArticleUrl
+    getArticleUrl,
+    createNewsCard
   });
 })();
